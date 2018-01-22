@@ -3,6 +3,7 @@ import tools as tl
 
 
 def make_list_of_all_pages():
+    '''Make a list of all pages'''
     list_of_all_pages = []
     list_of_letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
                        'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
@@ -14,6 +15,7 @@ def make_list_of_all_pages():
 
 
 def save_all_pages():
+    '''Save all pages from list of pages'''
     list_of_pages = make_list_of_all_pages()
     for (page, name) in list_of_pages:
         tl.save_page_to_file(page, name)
