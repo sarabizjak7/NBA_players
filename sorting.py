@@ -36,7 +36,7 @@ regex_player_more = re.compile(
 
 
 def make_html_list():
-    '''Make list with all html files'''
+    '''Makes list with all html files'''
     html_list = []
     list_of_letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
                        'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
@@ -46,7 +46,7 @@ def make_html_list():
     return html_list
 
 def prepare_data(data):
-    '''Edit the information in the dictionary'''
+    '''Edits the information in the dictionary'''
     data = data.groupdict()
     data['height'] = float(data['height'][:4])
     data['seasons'] = int(data['seasons'])
@@ -60,7 +60,7 @@ def prepare():
         with open(element,encoding='utf8') as f:
             content_of_page = f.read()
             for match in regex_player.finditer(content_of_page):
-                data_list.append(prepare_data(match)) #slovar - z zanko shranim v seznam
+                data_list.append(prepare_data(match)) 
     return data_list
     
 
@@ -70,54 +70,61 @@ def prepare():
 data_list = prepare()
 
 def make_list_of_extra_pages(data_list):
+    '''Makes list with all extra html files'''
     list_of_extra = []
     for player in data_list:
         filename = str(player['player_link'])+".html"
         list_of_extra.append(('http://en.hispanosnba.com/amp/players/{}'.format(player['player_link']), filename))
     return list_of_extra
 
+def make_list_of_extra_html(data_list):
+    '''Makes list with extra html files'''
+    list_of_extra_html = []
+    for player in data_list:
+        filename = str(player['player_link'])+".html"
+        list_of_extra_html.append(filename)
+    return list_of_extra_html
+    
+
 def save_extra_html(data_list):
+    '''Saves extra html files'''
     list_of_extra = make_list_of_extra_pages(data_list)
     for (player, name) in list_of_extra:
         tl.save_page_to_file(player, name)
     return
     
-           
+def prepare_extra_data(data_list):
+    '''Edits the information in the dictionary'''
+##    data_list = data_list.groupdict()
+    data_list['pick'] = int(data_list['pick'][13:])
+    data_list['points_per_game'] = float(data_list['points_per_game'])
+    data_list['rebounds_per_game'] = float(data_list['rebounds_per_game'])
+    data_list['assists_per_game'] = float(data_list['assists_per_game'])
+    data_list['field_goals'] = float(data_list['field_goals'])
+    data_list['three_points'] = float(data_list['three_points'])
+    data_list['free_throws'] = float(data_list['free_throws'])
+    return data_list
+
 def extend_player_data(data_list):
-    for player in data_list:
+    '''Updates the previous data with extra'''
+    html_list = make_list_of_extra_html(data_list)
+    prepared_data_list = prepare_extra_data(data_list)
+    for player in prepared_data_list:
         filename = str(player['player_link'])+".html"
         with open(filename) as f:
             text = f.read()
-            new_data = regex_player_more.find(text).groupdict()
-            player.update(new_data)
+##            for match in regex_player.finditer(text):
+                new_data = regex_player_more.finditer(text).groupdict()
+                player.update(prepare_extra_data(new_data))
     return
 
 
 extend_player_data(data_list)
 
-##def prepare2(data_list):
-##    '''Extends prevoius data'''
-##    html_list2 = save_extra_html(data_list)
-##    for element in html_list2:
-##        with open(element, encoding='utf8') as g:
-##            content_of_page2 = g.read()
-##            for match in regex_player_more.finditer(content_of_page2):
-##                data_list.update(match)
-##    return data_list
-##
-##        
-##prepare2(data_list)
 
-tl.make_table(data_list, ['player_name', 'player_link', 'position', 'height', 'from', 'to', 'seasons', 'nationality', 'college', 'draft', 'points_per_game', 'rebounds_per_game', 'assists_per_game',
-                            'field_goals', 'three_points', 'free_throws'], 'players.csv')
+
+tl.make_table(data_list, ['player_name', 'player_link', 'position', 'height', 'from', 'to', 'seasons', 'nationality', 'college', 'pick', 'points_per_game',
+                          'rebounds_per_game', 'assists_per_game', 'field_goals', 'three_points', 'free_throws'], 'players.csv')
         
 
 
-    
-#get more data -> player link -> extra data ... skupi v en slovar         
-##        
-##with open("test2.html") as f:
-##    text = f.read()
-##    print([x.groupdict() for x in regex_player_more.finditer(text)])
-##    
-    
