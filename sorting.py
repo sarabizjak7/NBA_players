@@ -72,8 +72,8 @@ data_list = prepare()
 def make_list_of_extra_pages(data_list):
     list_of_extra = []
     for player in data_list:
-        filename = str(player[player_link])+".html"
-        list_of_extra.append(('http://en.hispanosnba.com/amp/players/{}'.format(player[player_link]), filename))
+        filename = str(player['player_link'])+".html"
+        list_of_extra.append(('http://en.hispanosnba.com/amp/players/{}'.format(player['player_link']), filename))
     return list_of_extra
 
 def save_extra_html(data_list):
@@ -85,7 +85,7 @@ def save_extra_html(data_list):
            
 def extend_player_data(data_list):
     for player in data_list:
-        filename = str(player[player_link])+".html"
+        filename = str(player['player_link'])+".html"
         with open(filename) as f:
             text = f.read()
             new_data = regex_player_more.find(text).groupdict()
