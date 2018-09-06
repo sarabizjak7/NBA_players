@@ -29,7 +29,7 @@ regex_player_more = re.compile(
     r'd>(?P<assists_per_game>.*?)<t.*?' #AS
     r'd>(?P<field_goals>.*?)<t.*?' #FG%
     r'd>(?P<three_points>.*?)<t.*?' #3P%
-    r'd>(?P<free_throws>.*?)</table>.*?' #FT%
+    r'd>(?P<free_throws>.*?)<.*?' #FT%
     ,
     flags=re.DOTALL
     )
@@ -95,27 +95,30 @@ def save_extra_html(data_list):
     
 def prepare_extra_data(data_list):
     '''Edits the information in the dictionary'''
-##    data_list = data_list.groupdict()
     data_list['pick'] = int(data_list['pick'][13:])
-    data_list['points_per_game'] = float(data_list['points_per_game'])
-    data_list['rebounds_per_game'] = float(data_list['rebounds_per_game'])
-    data_list['assists_per_game'] = float(data_list['assists_per_game'])
-    data_list['field_goals'] = float(data_list['field_goals'])
-    data_list['three_points'] = float(data_list['three_points'])
-    data_list['free_throws'] = float(data_list['free_throws'])
+    data_list['points_per_game'] = 0.0 if data_list['points_per_game'] == '--' else float(data_list['points_per_game'])
+    data_list['rebounds_per_game'] = 0.0 if data_list['rebounds_per_game'] == '--' else float(data_list['rebounds_per_game'])
+    data_list['assists_per_game'] = 0.0 if data_list['assists_per_game'] == '--' else float(data_list['assists_per_game'])
+    data_list['field_goals'] = 0.0 if data_list['field_goals'] == '--' else float(data_list['field_goals'])
+    data_list['three_points'] = 0.0 if data_list['three_points'] == '--' else float(data_list['three_points'])
+    data_list['free_throws'] = 0.0 if data_list['free_throws'] == '--' else float(data_list['free_throws'])
     return data_list
 
 def extend_player_data(data_list):
     '''Updates the previous data with extra'''
-    html_list = make_list_of_extra_html(data_list)
-    prepared_data_list = prepare_extra_data(data_list)
-    for player in prepared_data_list:
+    for player in data_list:
         filename = str(player['player_link'])+".html"
         with open(filename) as f:
             text = f.read()
-##            for match in regex_player.finditer(text):
-                new_data = regex_player_more.finditer(text).groupdict()
-                player.update(prepare_extra_data(new_data))
+            print(player['player_link'])
+            if [x.groupdict() for x in regex_player_more.finditer(text)] == []:
+                pass
+            else:
+                new_data = [x.groupdict() for x in regex_player_more.finditer(text)][0]
+            
+##            player.update(prepare_extra_data(new_data))
+                player.update(new_data)
+                prepare_extra_data(player)
     return
 
 
@@ -124,7 +127,9 @@ extend_player_data(data_list)
 
 
 tl.make_table(data_list, ['player_name', 'player_link', 'position', 'height', 'from', 'to', 'seasons', 'nationality', 'college', 'pick', 'points_per_game',
-                          'rebounds_per_game', 'assists_per_game', 'field_goals', 'three_points', 'free_throws'], 'players.csv')
+                        'rebounds_per_game', 'assists_per_game', 'field_goals', 'three_points', 'free_throws'], 'players.csv')
         
-
+##with open("goran-dragic.html") as f:
+##    text = f.read()
+##    print([x.groupdict() for x in regex_player_more.finditer(text)])
 
