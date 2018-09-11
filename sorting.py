@@ -122,14 +122,14 @@ def extend_player_data(data_list):
     return
 
 
-extend_player_data(data_list)
+##extend_player_data(data_list)
 
 
 
-tl.make_table(data_list, ['player_name', 'player_link', 'position', 'height', 'from', 'to', 'seasons', 'nationality', 'college', 'pick', 'points_per_game',
-                        'rebounds_per_game', 'assists_per_game', 'field_goals', 'three_points', 'free_throws'], 'players.csv')
-        
-##with open("goran-dragic.html") as f:
-##    text = f.read()
-##    print([x.groupdict() for x in regex_player_more.finditer(text)])
+##tl.make_table(data_list, ['player_name', 'player_link', 'position', 'height', 'from', 'to', 'seasons', 'nationality', 'college', 'pick', 'points_per_game',
+##                        'rebounds_per_game', 'assists_per_game', 'field_goals', 'three_points', 'free_throws'], 'players.csv')
+##        
+with open("goran-dragic.html") as f:
+    text = f.read()
+    print([x.groupdict() for x in regex_player_more.finditer(text)])
 
